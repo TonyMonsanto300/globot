@@ -1,0 +1,7 @@
+{
+    "name": "channel",
+    "options": {
+        "systemName": "channel",
+        "channelID": "channelID"
+    }
+}

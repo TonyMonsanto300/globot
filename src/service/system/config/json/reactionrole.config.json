@@ -1,0 +1,43 @@
+{
+  "name": "reactionrole",
+  "options": {
+    "GenderPreference": {
+      "Text": "What is your gender preference?",
+      "ReactionRoles": [
+        {
+          "RoleName": "Glo Man",
+          "Emoji": "🔴"
+        },
+        {
+          "RoleName": "Glo Girl",
+          "Emoji": "🟢"
+        },
+        {
+          "RoleName": "Glo Other",
+          "Emoji": "🔵"
+        }
+      ]
+    },
+    "Nationality": {
+      "Text": "What nationality do you represent?",
+      "ReactionRoles": [
+        {
+          "RoleName": "Glosnia",
+          "Emoji": "🟥"
+        },
+        {
+          "RoleName": "Globania",
+          "Emoji": "🟩"
+        },
+        {
+          "RoleName": "Gloatia",
+          "Emoji": "🟦"
+        },
+        {
+          "RoleName": "Mesoglotamia",
+          "Emoji": "🟪"
+        }
+      ]
+    }
+  }
+}
