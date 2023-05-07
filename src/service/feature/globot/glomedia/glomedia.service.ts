@@ -14,6 +14,7 @@ export class GloMediaService {
       return mediaPath;
     } catch (error) {
       if (error instanceof Error){
+        //TODO: MESSAGE SERVICE
         console.error(`Error while retrieving Glo media: ${error.message}`);
         return null;
       }

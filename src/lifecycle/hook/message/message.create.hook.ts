@@ -1,6 +1,6 @@
 import { TextChannel } from "discord.js";
-import { BaseHook } from "./base.hook";
-import { ChannelName } from "../../service/discordjs/channel/channel.service";
+import { BaseHook } from "../base.hook";
+import { ChannelName } from "../../../service/discordjs/channel/channel.service";
 
 export class MessageCreateHook extends BaseHook {
     protected _name = 'messageCreate';

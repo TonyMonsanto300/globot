@@ -8,14 +8,18 @@ export class GloShutdownHandler extends AbstractCommandHandler {
         super(_commandBuilder, serviceModule)
     }
         protected async _execute(interaction: CommandInteraction<CacheType>): Promise<void> {
+            if((await this._serviceModule.Discord.Interaction.isOwner(interaction)) === false){
+                interaction.reply('You do not have permission to use this command!')
+                return
+            }
         //BotMessageHelper.DeleteBotMessages()
-        const botChannel = await this._serviceModule.Discord.Channel.getChannelByName(ChannelName.BOT);
-        if (botChannel) {
-            const messages = await botChannel.messages.fetch({ limit: 25 });
-            messages.forEach(async (msg) => {
-                if (msg.author.bot && msg.content.includes('(Globert is offline.)')) {
-                    await msg.delete();
-                }
+            const botChannel = await this._serviceModule.Discord.Channel.getChannelByName(ChannelName.BOT);
+            if (botChannel) {
+                const messages = await botChannel.messages.fetch({ limit: 25 });
+                messages.forEach(async (msg) => {
+                    if (msg.author.bot && msg.content.includes('(Globert is offline.)')) {
+                        await msg.delete();
+                    }
             });
 
             //BotMessageHelper.SendGoodbyeMessage()

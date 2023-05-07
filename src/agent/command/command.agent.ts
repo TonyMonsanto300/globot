@@ -41,28 +41,10 @@ export default class CommandAgent {
     }
   }
 
-  async inBotChannel(interaction: Interaction): Promise<boolean> {
-    const _interaction = interaction as CommandInteraction;
-    if ((((await this._serviceModule.Discord.Channel.getChannelByID(_interaction.channelId)).name) == ChannelName.BOT) 
-    && (_interaction.member!.permissions as PermissionsBitField).has(PermissionsBitField.Flags.Administrator)) {
-      await _interaction.reply({ content: 'You cannot use slash commands in this channel.', ephemeral: true });
-      return new Promise(() => true);
-    } else {
-      return new Promise(() => false)
-    }
-  }
-
-  async isOwner(interaction: Interaction){
-    if (interaction.user.id !== this._serviceModule.Discord.Guild.getGuild().ownerId) {
-      await (interaction as CommandInteraction).reply('You do not have permission to use this command.');
-      return;
-    }
-  }
-
   async handleCommandsSetup() {
   
     this._clientAgent.getClient().on('interactionCreate', async (interaction: Interaction) => {
-      if ((!interaction.isCommand()) || (await this.inBotChannel(interaction)))  return;
+      if ((!interaction.isCommand()) || (await this._serviceModule.Discord.Interaction.inBotChannel(interaction)))  return;
 
       try{
         this.commandHandlers.find(handler => handler._command.name === interaction.command!.name)!.execute(interaction)

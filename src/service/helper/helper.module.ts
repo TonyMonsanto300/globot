@@ -1,8 +1,11 @@
+import { GloMessageHelperService } from './glomessage.helper';
 import { JSONHelperService } from './json.helper.service';
 
 export class HelperModule {
-    jsonHelperService: JSONHelperService;
-    constructor() {
-        this.jsonHelperService = new JSONHelperService();
+    _gloMessageHelperService: GloMessageHelperService;
+    _jsonHelperService: JSONHelperService;
+    constructor(gloMessageHelperService: GloMessageHelperService, jsonHelperService: JSONHelperService) {
+        this._gloMessageHelperService = gloMessageHelperService;
+        this._jsonHelperService = jsonHelperService;
     }
 }

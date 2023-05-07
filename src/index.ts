@@ -1,9 +1,10 @@
 import { ClientAgent } from './agent/client/client.agent';
 import CommandAgent from './agent/command/command.agent';
-import { StartupPhase } from './lifecycle/startup.phase';
-
+import { HookManager } from './lifecycle/hook/hook.manager';
+import { Startup } from './lifecycle/startup';
 import { ServiceModule } from './service/service.module';
 
 const clientAgent= new ClientAgent()
 const serviceModule = new ServiceModule(clientAgent)
-new StartupPhase(serviceModule, new CommandAgent(serviceModule, clientAgent)).init()
+const commandAgent = new CommandAgent(serviceModule, clientAgent)
+new Startup(serviceModule, commandAgent, new HookManager(serviceModule, commandAgent)).init()

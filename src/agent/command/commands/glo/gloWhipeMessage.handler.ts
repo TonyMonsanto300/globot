@@ -12,6 +12,12 @@ export class GloWhipeMessageHandler extends AbstractCommandHandler {
     }
 
     protected async _execute(interaction: CommandInteraction): Promise<void> {
+        if((await this._serviceModule.Discord.Interaction.isAdmin(interaction)) === false){
+
+            //TODO: MESSAGE SERVICE
+            interaction.reply('You do not have permission to use this command!')
+            return
+        } 
         const channel = await this._serviceModule.Discord.Channel.getChannelByName(ChannelName.BOT);
         if (channel) {
         const messages = await channel.messages.fetch({ limit: 100 });
@@ -20,6 +26,8 @@ export class GloWhipeMessageHandler extends AbstractCommandHandler {
                 await msg.delete();
             }
         });
+
+        //TODO: MESSAGE SERVICE
         await interaction.reply('Messages have been wiped!');
         }
     }
