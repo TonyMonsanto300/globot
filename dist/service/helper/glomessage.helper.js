@@ -1,16 +1,15 @@
-import { ServiceModule } from "../service.module";
-import { ChannelName, ChannelService } from '../discordjs/channel/channel.service';
-import { MessageService } from '../system/message/message.service';
-
-export class GloMessageHelperService {
-    private _channelService: ChannelService;
-    private _messageService: MessageService;
-    constructor(channelService: ChannelService, messageService: MessageService) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.GloMessageHelperService = void 0;
+const channel_service_1 = require("../discordjs/channel/channel.service");
+class GloMessageHelperService {
+    _channelService;
+    _messageService;
+    constructor(channelService, messageService) {
         this._channelService = channelService;
         this._messageService = messageService;
     }
-
-    async deleteGloMessages(channelName: ChannelName = ChannelName.BOT): Promise<void> {
+    async deleteGloMessages(channelName = channel_service_1.ChannelName.BOT) {
         const channel = (await this._channelService.getChannelByName(channelName));
         //! Log
         const messages = await channel.messages.fetch({ limit: 25 });
@@ -19,6 +18,8 @@ export class GloMessageHelperService {
             if (this._messageService.Login.some(loginMessage => botMessage.content.startsWith(loginMessage) && botMessage.content.includes("(Globert is back online!)"))) {
                 botMessage.delete();
             }
-        } 
+        }
     }
 }
+exports.GloMessageHelperService = GloMessageHelperService;
+//# sourceMappingURL=glomessage.helper.js.map

@@ -8,4 +8,5 @@ export declare class ChannelService {
     private guildService;
     constructor(guildService: GuildService);
     getChannelByName(channelName: ChannelName): Promise<TextChannel>;
+    getChannelByID(channelId: string): Promise<TextChannel>;
 }

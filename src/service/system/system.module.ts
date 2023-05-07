@@ -10,7 +10,7 @@ export class SystemModule {
     private _message: MessageService
 
     constructor(config: ConfigService = new ConfigService(), logger: LogService = new LogService(), 
-        broadcast: BroadcastService = new BroadcastService(), message: MessageService) {
+        broadcast: BroadcastService = new BroadcastService(), message: MessageService = new MessageService()) {
         this._config = config;
         this._logger = logger;
         this._broadcast = broadcast;

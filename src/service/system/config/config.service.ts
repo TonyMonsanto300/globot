@@ -8,6 +8,7 @@ import path from 'path';
 import { JSONHelperService } from '../../helper/json.helper.service';
 import { ReactionRoleConfig } from './model/reactionrole.config.model';
 import { ChannelConfig } from './model/channel.config.model';
+import { GloMessageHelperService } from '../../helper/glomessage.helper';
 
 export enum ConfigName {
     ROLE = "role",
@@ -50,7 +51,7 @@ export class ConfigService {
         const jsonFiles = fs.readdirSync(this._configDir).filter(file => file.endsWith('.json'));
         jsonFiles.forEach((jsonFile) => {
             try {
-                const configModel : ConfigModel = new HelperModule().jsonHelperService.readJSONFromFile<ConfigModel>(`${this._configDir}\\${jsonFile}`)
+                const configModel : ConfigModel = new HelperModule().getJSON().readJSONFromFile<ConfigModel>(`${this._configDir}\\${jsonFile}`)
                 console.log(`Loaded config model ${JSON.stringify(configModel)}`)
                 this._configModels.set(configModel.name, configModel);
             } catch (error) {

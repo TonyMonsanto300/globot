@@ -20,6 +20,7 @@ class RoleService {
     async getRoleByName(roleName) {
         const role = (await this.getGuildRoles()).find(role => role.name === roleName);
         if (!role) {
+            //TODO: MESSAGE SERVICE
             throw new Error(`Role ${roleName} not found`);
         }
         return role;
@@ -27,6 +28,7 @@ class RoleService {
     async getRoleById(roleId) {
         const role = (await this.getGuildRoles()).find(role => role.id === roleId);
         if (!role) {
+            //TODO: MESSAGE SERVICE
             throw new Error(`Role ${roleId} not found`);
         }
         return role;
@@ -50,10 +52,13 @@ class RoleService {
     }
     addRoleToMember(member, role) {
         member.roles.add(role);
+        //TODO: MESSAGE SERVICE
         console.log(`Added role ${role.name} to ${member.user.username}`);
+        //! Log
     }
     removeRoleFromMember(member, role) {
         member.roles.remove(role);
+        //TODO: MESSAGE SERVICE
         console.log(`Removed role ${role.name} from ${member.user.username}`);
     }
 }

@@ -12,9 +12,10 @@ class ChannelService {
         this.guildService = guildService;
     }
     async getChannelByName(channelName) {
-        channelName.toString();
-        JSON.stringify(await this.guildService.getGuild());
         return (await this.guildService.getGuild().channels.fetch()).find(channel => channel?.name === channelName.toString());
+    }
+    async getChannelByID(channelId) {
+        return (await this.guildService.getGuild().channels.fetch()).find(channel => channel?.id === channelId);
     }
 }
 exports.ChannelService = ChannelService;

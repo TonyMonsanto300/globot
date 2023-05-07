@@ -52,7 +52,8 @@ class StartupPhase {
                 botChannel.send(`${loginMessages[randomIndex]} (Globert is back online!)`);
             }
             this._serviceModule.Feature.ReactionRole.setupMessagesAndReactions();
-            this._commandAgent.setupSlashCommands();
+            this._commandAgent.registerCommands();
+            this._commandAgent.handleCommandsSetup();
         });
     }
 }

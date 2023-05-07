@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "node dist/index.js"
+    "start": "npx tsc && node dist/index.js"
   },
   "dependencies": {
     "@nestjs/common": "^9.4.0",

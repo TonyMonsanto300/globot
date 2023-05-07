@@ -71,7 +71,7 @@ class ConfigService {
         const jsonFiles = fs.readdirSync(this._configDir).filter(file => file.endsWith('.json'));
         jsonFiles.forEach((jsonFile) => {
             try {
-                const configModel = new helper_module_1.HelperModule().jsonHelperService.readJSONFromFile(`${this._configDir}\\${jsonFile}`);
+                const configModel = new helper_module_1.HelperModule().getJSON().readJSONFromFile(`${this._configDir}\\${jsonFile}`);
                 console.log(`Loaded config model ${JSON.stringify(configModel)}`);
                 this._configModels.set(configModel.name, configModel);
             }

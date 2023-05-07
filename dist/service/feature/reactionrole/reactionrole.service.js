@@ -17,6 +17,7 @@ class ReactionRoleService {
     async setupMessagesAndReactions() {
         const rolesChannel = await this._channelService.getChannelByName(channel_service_1.ChannelName.REACTIONROLE);
         if (!rolesChannel) {
+            //TODO: MESSAGE SERVICE
             console.log(`Could not find roles channel '${channel_service_1.ChannelName.REACTIONROLE}'`);
             return;
         }
@@ -42,6 +43,7 @@ class ReactionRoleService {
             if (messageAlreadySent) {
                 continue;
             }
+            //TODO: MESSAGE SERVICE
             const message = await rolesChannel.send(messageText);
             for (const reactionRole of reactionRoleSet.ReactionRoles) {
                 await message.react(reactionRole.Emoji);

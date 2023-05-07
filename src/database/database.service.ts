@@ -16,11 +16,12 @@ export class DatabaseService {
 
     async createOrConnectDatabase() {
         return new Promise<void>((resolve, reject) => {
-            this.db = new sqlite3.Database('Globert.db', (err) => {
+            this.db = new sqlite3.Database('../../Globert.db', (err) => {
                 if (err) {
                     console.error(err.message);
                     reject(err);
                 } else {
+                    //! Log
                     console.log('Connected to the Globert database.');
                     resolve();
                 }
