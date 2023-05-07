@@ -59,6 +59,7 @@ export class StartupPhase {
             }
         
             this._serviceModule.Feature.ReactionRole.setupMessagesAndReactions();
+            this._commandAgent.registerCommands();
             this._commandAgent.handleCommandsSetup();
         }) 
     }
