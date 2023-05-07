@@ -1,105 +1,78 @@
-import { Interaction, PermissionsBitField, REST, Routes, TextChannel, Guild, OAuth2Guild } from 'discord.js';
+import { Interaction, PermissionsBitField, REST, Routes, TextChannel, Guild, OAuth2Guild, ApplicationCommand, SlashCommandBuilder, RESTPostAPIApplicationCommandsJSONBody, User, CommandInteraction, GuildMember } from 'discord.js';
 import { ChannelName } from "../../service/discordjs/channel/channel.service";
 import { ServiceModule } from "../../service/service.module";
 import { ClientAgent } from "../client/client.agent";
+import { AbstractCommandHandler } from './model/commandHandler.base';
+import { GloRandomMediaHandler } from './commands/glo/gloRandomMedia.handler';
+import { GloWhipeMessageHandler } from './commands/glo/gloWhipeMessage.handler';
+import { GloShutdownHandler } from './commands/glo/gloShutdownHandler';
 
 export default class CommandAgent {
-    private _serviceModule: ServiceModule;
-    private _clientAgent: ClientAgent;
+  private _serviceModule: ServiceModule;
+  private _clientAgent: ClientAgent;
+  commandHandlers: AbstractCommandHandler[ ] = []
 
-    constructor(serviceModule: ServiceModule, clientAgent: ClientAgent) {
-        this._serviceModule = serviceModule;
-        this._clientAgent = clientAgent;
-    }
-  
-    async registerCommands() {
-      const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN!);
+  constructor(serviceModule: ServiceModule, clientAgent: ClientAgent) {
+    this._serviceModule = serviceModule;
+    this._clientAgent = clientAgent;
+    this._clientAgent.getClient()
+
+    this.commandHandlers.push(new GloRandomMediaHandler(this._serviceModule));
+    this.commandHandlers.push(new GloWhipeMessageHandler(this._serviceModule));
+    this.commandHandlers.push(new GloShutdownHandler(this._serviceModule));
     
-      const commands = [
-        {
-          name: 'glo',
-          description: 'Get a random Glo Gang media file',
-        },
-        {
-          name: 'wipe',
-          description: 'Wipe the last messages in the channel',
-          defaultPermission: false // hidden by default,
-        },
-        {
-          name: 'shutdown',
-          description: 'Shut down the bot',
-          defaultPermission: false
-        },
-      ];
-  
-      try {
-        console.log('Started refreshing application (/) commands.');
-        const guild: Guild = await this._serviceModule.Discord.Guild.getGuild();
-        await rest.put(Routes.applicationGuildCommands(this._clientAgent.getClient().application?.id!, guild.id!), { body: commands });
-        console.log('Successfully reloaded application (/) commands.');
-      } catch (error) {
-        console.error(error);
-      }
-    }
-  
-    async setupSlashCommands() {
-      this.registerCommands();
-    
-      this._clientAgent.getClient().on('interactionCreate', async (interaction: Interaction) => {
-        if (!interaction.isCommand()) return;
-    
-        const { commandName, user, guild, channel } = interaction;
-        const interactionChannel = channel as TextChannel;
-    
-        if (interactionChannel.name == ChannelName.BOT
-        && (await this._serviceModule.Discord.Member.getMemberByID(user.id)).permissions.has(PermissionsBitField.Flags.Administrator)) {
-          await interaction.reply({ content: 'You cannot use slash commands in this channel.', ephemeral: true });
-          return;
-        }
-    
-        if (commandName === 'glo') {
-          const mediaPath = await this._serviceModule.Feature.GloMedia.getRandomGloMedia();
-          const media: any = { files: [mediaPath] };
-          await interaction.reply(media);
-        } else if (commandName === 'shutdown') {
-          if (user.id !== guild!.ownerId) {
-            await interaction.reply('You do not have permission to use this command.');
-            return;
-          }
+  } 
+
+  async registerCommands(){
+    const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN!);
+    try {
+      //messageService.Command.RefreshApplicationStart()
+      console.log('Started refreshing application (/) commands.');
+      await rest.put(Routes.applicationGuildCommands(
+        this._clientAgent.getClient().application?.id!, this._serviceModule.Discord.Guild.getGuild().id!), 
+          { body: this.commandHandlers.map(handler => handler.Command) }
+        );
+      
         
-          const goodbyeMessages = [
-            'Goodbye!',
-            'See you later!',
-            'Until next time!',
-          ];
-        
-          const channel = await this._serviceModule.Discord.Channel.getChannelByName(ChannelName.BOT);
-          if (channel) {
-            const messages = await channel.messages.fetch({ limit: 25 });
-            messages.forEach(async (msg) => {
-              if (msg.author.id === this._clientAgent.getClient().user!.id && msg.content.includes('(Globert is offline.)')) {
-                await msg.delete();
-              }
-            });
-            const randomIndex = Math.floor(Math.random() * goodbyeMessages.length);
-            await channel.send(`${goodbyeMessages[randomIndex]} (Globert is offline.)`);
-          }
-        
-          console.log('Shutdown command received. Shutting down bot...');
-          await interaction.reply('Shutting down Globert...');
-          this._clientAgent.getClient().destroy();
-        } else if (commandName === 'wipe') {
-          const channel = await this._serviceModule.Discord.Channel.getChannelByName(ChannelName.BOT);
-          if (channel) {
-            const messages = await channel.messages.fetch({ limit: 100 });
-            messages.forEach(async (msg) => {
-              if (msg.author.id === this._clientAgent.getClient().user!.id) {
-                await msg.delete();
-              }
-            });
-            await interaction.reply('Messages have been wiped!');
-          }
-        }
-      });
+      //mesageService.Command.RefreshApplicationDone()
+      console.log('Successfully reloaded application (/) commands.');
+    } catch (error) {
+      console.error(error);
     }
   }
+
+  async inBotChannel(interaction: Interaction): Promise<boolean> {
+    const _interaction = interaction as CommandInteraction;
+    if ((((await this._serviceModule.Discord.Channel.getChannelByID(_interaction.channelId)).name) == ChannelName.BOT) 
+    && (_interaction.member!.permissions as PermissionsBitField).has(PermissionsBitField.Flags.Administrator)) {
+      await _interaction.reply({ content: 'You cannot use slash commands in this channel.', ephemeral: true });
+      return new Promise(() => true);
+    } else {
+      return new Promise(() => false)
+    }
+  }
+
+  async isOwner(interaction: Interaction){
+    if (interaction.user.id !== this._serviceModule.Discord.Guild.getGuild().ownerId) {
+      await (interaction as CommandInteraction).reply('You do not have permission to use this command.');
+      return;
+    }
+  }
+
+  async handleCommandsSetup() {
+  
+    this._clientAgent.getClient().on('interactionCreate', async (interaction: Interaction) => {
+      if ((!interaction.isCommand()) || (await this.inBotChannel(interaction)))  return;
+
+      try{
+        this.commandHandlers.find(handler => handler._command.name === interaction.command!.name)!.execute(interaction)
+      } catch {
+        console.log(`Command ${interaction.commandName} not found`)
+      }
+      
+        console.log('Shutdown command received. Shutting down bot...');
+        await interaction.reply('Shutting down Globert...');
+        this._clientAgent.getClient().destroy();
+    })
+  }
+}

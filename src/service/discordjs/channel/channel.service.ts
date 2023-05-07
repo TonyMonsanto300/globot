@@ -12,8 +12,9 @@ export class ChannelService {
         this.guildService = guildService;
     }
     async getChannelByName(channelName: ChannelName): Promise<TextChannel> {
-        channelName.toString();
-        JSON.stringify(await this.guildService.getGuild());
         return (await this.guildService.getGuild().channels.fetch()).find(channel => channel?.name === channelName.toString()) as TextChannel;
     }
+    async getChannelByID(channelId: string): Promise<TextChannel> {
+        return (await this.guildService.getGuild().channels.fetch()).find(channel => channel?.id === channelId) as TextChannel;
+    }   
 }
