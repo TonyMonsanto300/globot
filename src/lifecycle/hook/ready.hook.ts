@@ -13,30 +13,38 @@ export class ReadyHook extends BaseHook {
             //TODO: MessageService
 
             const botChannel = await this._serviceModule.Discord.Channel.getChannelByName(ChannelName.BOT);
-            //! Log
+            if(botChannel) {
+                this._serviceModule.System.Logging.Log.Success(`Bot Channel found: ${botChannel.name}`);
+            } else {
+                this._serviceModule.System.Logging.Log.Error(`Bot Channel not found!`);
+            }
             if (botChannel) {
-                // Delete the last bot login message in the channel
                 //? BotMessageHelperService
                 const messages = await botChannel.messages.fetch({ limit: 25 });
                 const botMessages = messages.filter(message => message.author.id === this._serviceModule.Discord.Client.getClient().user?.id);
                 for (const botMessage of botMessages.values()) {
-                    if (this._serviceModule.System.Message.Login.some(loginMessage => botMessage.content.startsWith(loginMessage) && botMessage.content.includes("(Globert is back online!)"))) {
-                        botMessage.delete();
+                    if (this._serviceModule.System.Message.Login.some(loginMessage => botMessage.content.startsWith(loginMessage) 
+                        && botMessage.content.includes("(Globert is back online!)"))) {
+                        await botMessage.delete();
+                        this._serviceModule.System.Logging.Log.System(`Deleted previous message: ${botMessage.content}`);
+                    } else {
+                        this._serviceModule.System.Logging.Log.System(`No previous Login messages found, nothing to delete.`);
                     }
                 }
         
+                //TODO: Create helper service with array random function
                 //TODO: MessageService
                 const randomIndex = Math.floor(Math.random() * this._serviceModule.System.Message.Login.length);
                 botChannel.send(`${this._serviceModule.System.Message.Login[randomIndex]} (Globert is back online!)`);
             }
         
-            
+            //TODO: Move into it's own hook
             this._serviceModule.Feature.ReactionRole.setupMessagesAndReactions();
             this._commandAgent.registerCommands();
             this._commandAgent.handleCommandsSetup();
 
             //TODO: MessageService
-            console.log(`Logged in successfully!`);
+            this._serviceModule.System.Logging.Log.Success(`Logged in successfully!`);
         }) 
     }
 }

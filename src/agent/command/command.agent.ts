@@ -27,7 +27,7 @@ export default class CommandAgent {
     const rest = new REST({ version: '9' }).setToken(process.env.BOT_TOKEN!);
     try {
       //messageService.Command.RefreshApplicationStart()
-      console.log('Started refreshing application (/) commands.');
+      this._serviceModule.System.Logging.Log.System('Started refreshing application (/) commands.');
       await rest.put(Routes.applicationGuildCommands(
         this._clientAgent.getClient().application?.id!, this._serviceModule.Discord.Guild.getGuild().id!), 
           { body: this.commandHandlers.map(handler => handler.Command) }
@@ -35,7 +35,7 @@ export default class CommandAgent {
       
         
       //mesageService.Command.RefreshApplicationDone()
-      console.log('Successfully reloaded application (/) commands.');
+      this._serviceModule.System.Logging.Log.Success('Successfully reloaded application (/) commands.');
     } catch (error) {
       console.error(error);
     }
@@ -49,10 +49,10 @@ export default class CommandAgent {
       try{
         this.commandHandlers.find(handler => handler._command.name === interaction.command!.name)!.execute(interaction)
       } catch {
-        console.log(`Command ${interaction.commandName} not found`)
+        this._serviceModule.System.Logging.Log.Error(`Command ${interaction.commandName} not found`)
       }
       
-        console.log('Shutdown command received. Shutting down bot...');
+        this._serviceModule.System.Logging.Log.System('Shutdown command received. Shutting down bot...');
         await interaction.reply('Shutting down Globert...');
         this._clientAgent.getClient().destroy();
     })

@@ -8,6 +8,6 @@ export class GuildMemberRemoveHook extends GuildMemberHookBase {
     }
     protected _name = 'guildMemberRemove';
     protected async setup(member: any): Promise<void> {
-        await this._database.switchMemberActiveStatus(member);
+        // await this._database.switchMemberActiveStatus(member);
     }
 }

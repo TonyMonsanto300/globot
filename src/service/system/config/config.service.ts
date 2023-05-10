@@ -8,7 +8,7 @@ import path from 'path';
 import { JSONHelperService } from '../../helper/json.helper.service';
 import { ReactionRoleConfig } from './model/reactionrole.config.model';
 import { ChannelConfig } from './model/channel.config.model';
-import { GloMessageHelperService } from '../../helper/glomessage.helper';
+import LoggingService from '../logging/logging.service';
 
 export enum ConfigName {
     ROLE = "role",
@@ -17,9 +17,11 @@ export enum ConfigName {
 }
 
 export class ConfigService {
+    private _loggingService: LoggingService;
     private _configDir = path.join(__dirname, "..", "..", "..", "..", "src", "service", "system", "config", "json")
     private _configModels : Map<string, ConfigModel> = new Map<string, ConfigModel>()
-    constructor() {
+    constructor(loggingService: LoggingService) {
+        this._loggingService = loggingService;
         this.loadConfigModels();
     }
 
@@ -52,13 +54,13 @@ export class ConfigService {
         jsonFiles.forEach((jsonFile) => {
             try {
                 const configModel : ConfigModel = new HelperModule().getJSON().readJSONFromFile<ConfigModel>(`${this._configDir}\\${jsonFile}`)
-                console.log(`Loaded config model ${JSON.stringify(configModel)}`)
                 this._configModels.set(configModel.name, configModel);
+                this._loggingService.Log.Success(`Loaded config model: ${configModel.name}`)
             } catch (error) {
                 if(error instanceof Error){
                     throw Error
                 } else {
-                    console.log(error)
+                    this._loggingService.Log.Error(error)
                 }
             }
         })

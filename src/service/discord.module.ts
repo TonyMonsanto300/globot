@@ -5,7 +5,7 @@ import { MemberService } from "./discordjs/member/member.service";
 import { RoleService } from "./discordjs/role/role.service";
 import { ConfigService } from './system/config/config.service';
 import {InteractionService} from "./discordjs/interaction/interaction.service"
-import { Interaction } from 'discord.js';
+import LoggingService from "./system/logging/logging.service";
 
 
 export class DiscordModule { 
@@ -18,13 +18,11 @@ export class DiscordModule {
     private _interactionService: InteractionService
 
 
-    constructor(clientService: ClientAgent) {
-        
-
+    constructor(clientService: ClientAgent, configService: ConfigService, loggingService: LoggingService) {
         this._clientService = clientService
-        this._configService = new ConfigService()
+        this._configService = configService
         this._guildService = new GuildService(this._clientService)
-        this._roleService = new RoleService(this._guildService, this._configService)
+        this._roleService = new RoleService(this._guildService, this._configService, loggingService)
         this._channelService = new ChannelService(this._guildService)
         this._memberService = new MemberService(this._guildService)
         this._interactionService = new InteractionService(this._channelService, this._guildService)

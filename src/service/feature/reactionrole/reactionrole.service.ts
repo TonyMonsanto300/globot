@@ -4,23 +4,25 @@ import { MemberService } from '../../discordjs/member/member.service';
 import { RoleService } from '../../discordjs/role/role.service';
 import { ConfigName, ConfigService } from '../../system/config/config.service';
 import { ConfigModel, ConfigOptions, OptionSet, ReactionRole } from '../../system/config/model/config.model';
+import LoggingService from '../../system/logging/logging.service';
 
 export class ReactionRoleService {
   _channelService: ChannelService;
   _memberService: MemberService;
   _roleService: RoleService;
   _configservice: ConfigService;
-  constructor(channelService: ChannelService, memberService: MemberService, roleservice: RoleService, configService: ConfigService){
+  _loggingService: LoggingService;
+  constructor(channelService: ChannelService, memberService: MemberService, roleservice: RoleService, configService: ConfigService, loggingService: LoggingService){
     this._channelService = channelService;
     this._memberService = memberService;
     this._roleService = roleservice;
     this._configservice = configService;
+    this._loggingService = loggingService;
   }
   async setupMessagesAndReactions() {
     const rolesChannel: TextChannel = await this._channelService.getChannelByName(ChannelName.REACTIONROLE)
     if (!rolesChannel) {
-      //TODO: MESSAGE SERVICE
-      console.log(`Could not find roles channel '${ChannelName.REACTIONROLE}'`);
+      this._loggingService.Log.Error(`Could not find roles channel '${ChannelName.REACTIONROLE}'`);
       return;
     }
   

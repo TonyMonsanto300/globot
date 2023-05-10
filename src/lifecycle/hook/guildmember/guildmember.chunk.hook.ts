@@ -10,14 +10,14 @@ export class GuildMemberChunkHook extends BaseHook {
     async init(): Promise<void> {
         this._client.on(this._name, async (members: any) => {
             for (const member of members) {
-                await this._database.addOrUpdateMember(member);
+                // await this._database.addOrUpdateMember(member);
                 
                 const guild = this._serviceModule.Discord.Guild.getGuild();
                 if (!guild.members.cache.has(member.id)) {
-                    await this._database.switchMemberActiveStatus(member);
+                    // await this._database.switchMemberActiveStatus(member);
                 }
                 
-                console.log(`Added user: ${member.user.username}#${member.user.discriminator}`);
+                this._serviceModule.System.Logging.Log.System(`Added user: ${member.user.username}#${member.user.discriminator}`);
             }
         }
     );
